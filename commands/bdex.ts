@@ -30,7 +30,7 @@ module.exports = {
                 let emojis: Collection<string, GuildEmoji> | undefined;
                 if(process.env.GUILD_EMOJIS_ID) emojis = interaction.client.guilds.cache.get(process.env.GUILD_EMOJIS_ID)?.emojis.cache;
  
-                const pokemonData = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`).then(res => res.json()) as Pokemon;
+                const pokemonData = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon.toLowerCase()}`).then(res => res.json()) as Pokemon;
 
                 const typeData = await Promise.all(pokemonData.types.map(type => fetch(type.type.url).then(res => res.json()))) as Type[];
 
@@ -48,7 +48,7 @@ module.exports = {
                   
                 const quadrupleDamageFromTypes = Object.keys(typeCounts).filter(word => typeCounts[word] > 1);
 
-                const html = await fetch(`https://www.pokemon.com/us/pokedex/${pokemon}`).then(res => res.text());
+                const html = await fetch(`https://www.pokemon.com/us/pokedex/${pokemon.toLowerCase()}`).then(res => res.text());
                 const $ = load(html);
                 const attributesDiv = $('div.pokedex-pokemon-attributes').first();
                 const weaknessDiv = attributesDiv.find('div.dtm-weaknesses');
@@ -62,8 +62,9 @@ module.exports = {
                 let EVs = pokemonData.stats.filter(stat => stat.effort > 0);
                 let highestBaseStat = pokemonData.stats.reduce((prev, current) => (prev.base_stat > current.base_stat) ? prev : current);
                 const embed = new EmbedBuilder()
-                    .setAuthor({ name: 'Pokédex', iconURL: interaction.client.user.displayAvatarURL() })
+                    .setAuthor({ name: 'Pokédex', url: `https://www.pokemon.com/us/pokedex/${pokemon}` })
                     .setThumbnail(pokemonData.sprites.other['official-artwork'].front_default)
+                    .setURL(`https://www.pokemon.com/us/pokedex/${pokemon.toLowerCase()}`)
                     .setColor('#2b2d31')
                     .setTitle(pokemonData.name.capitalize())
                     .addFields([
@@ -71,9 +72,10 @@ module.exports = {
                         { name: 'Specialty', value: `${highestBaseStat.stat.name.capitalize()} (${highestBaseStat.base_stat})`, inline: true },
                         { name: 'EVs', value: EVs.map(stat => `${stat.effort} ${stat.stat.name.capitalize()}`).join('\n'), inline: true },
                         { name: 'Weak To', value: weakTypes.map(type => `${quadrupleDamageFromTypes.includes(type.toLowerCase()) ? '**4x**' : '2x'} ${emojis ? emojiFinder(emojis, type.toLowerCase()) + ' ' : ''}${type.capitalize()}`).join('\n'), inline: true },
+                        { name: 'Resistant To', value: typeData.map(type => type.damage_relations.half_damage_from).flat().length > 0 ? typeData.map(type => type.damage_relations.half_damage_from).flat().map(type => `${emojis ? emojiFinder(emojis, type.name) + ' ' : ''}${type.name.capitalize()}`).join('\n') : 'None', inline: true },
                         { name: 'Immune To', value: typeData.map(type => type.damage_relations.no_damage_from).flat().length > 0 ? typeData.map(type => type.damage_relations.no_damage_from).flat().map(type => `${emojis ? emojiFinder(emojis, type.name) + ' ' : ''}${type.name.capitalize()}`).join('\n') : 'None', inline: true },
                     ])
-                    .setFooter({ text: `#${pokemonData.id.toString().padStart(3, '0')}` });
+                    .setFooter({ text: `#${pokemonData.id.toString().padStart(3, '0')} • Pokemon.com`, iconURL: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Pok%C3%A9_Ball_icon.svg/1200px-Pok%C3%A9_Ball_icon.svg.png' });
                 return interaction.editReply({ embeds: [embed] });
             } catch (error) {
                 console.error(error);
