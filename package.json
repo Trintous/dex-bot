@@ -1,0 +1,27 @@
+{
+  "name": "dex-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Trintous/dex-bot.git"
+  },
+  "author": "tony",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Trintous/dex-bot/issues"
+  },
+  "homepage": "https://github.com/Trintous/dex-bot#readme",
+  "dependencies": {
+    "@types/cheerio": "^0.22.31",
+    "@types/fast-levenshtein": "^0.0.2",
+    "cheerio": "^1.0.0-rc.12",
+    "discord.js": "^14.12.1",
+    "dotenv": "^16.3.1",
+    "fast-levenshtein": "^3.0.0"
+  }
+}
