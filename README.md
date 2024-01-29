@@ -1,4 +1,6 @@
 # dex-bot
+⚠ This no longer works, as the pokemon site has added bot protection I have yet to bypass. Sorry!
+
 ### A lightweight Pokémon bot
 
 Just a bot I use sometimes when I need information while in a battle. 
